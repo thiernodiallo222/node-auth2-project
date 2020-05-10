@@ -1,18 +1,16 @@
 
-const express = require("express");
-const router = express.Router();
-const bcrypt = require('bcryptjs');
-const db = require('./user-model');
-const restricted = require('../middleware/restricted');
+const express = require("express")
+const db = require("./user-model")
+const restrict = require("../middleware/restrict");
+const router = express.Router()
 
+// This endpoint is only available to logged-in admin users due to the `restrict` middleware
+router.get("/users", restrict("admin"), async (req, res, next) => {
+	try {
+		res.json(await db.get())
+	} catch(err) {
+		next(err)
+	}
+})
+ module.exports = router;
 
-router.get("/users", restricted(), async (req, res, next) => {
-  db.find().then(members => {
-    res.json(members);
-  }).catch(error => {
-    next(error);
-  }) 
-}
-);
-
-module.exports = router;
